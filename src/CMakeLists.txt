@@ -118,7 +118,7 @@ GENERATE_VAPI
 )
 
 add_executable(pdfpc
-    ${VALA_C}
+    ${VALA_C} support.c strptime.c
 )
 
 # explicitly add libraries (needed e.g. for Fedora 13+)
