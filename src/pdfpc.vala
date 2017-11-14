@@ -114,7 +114,7 @@ namespace pdfpc {
         /**
          * Set the CSS styling for GTK.
          */
-        private void set_styling() {
+        private void set_styling(string wrd) {
             var globalProvider = new Gtk.CssProvider();
             var userProvider = new Gtk.CssProvider();
 
@@ -124,7 +124,7 @@ namespace pdfpc {
                 userProvider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
             var sourceCssPath = Path.build_filename(Paths.SOURCE_PATH, "rc/pdfpc.css");
-            var distCssPath = Path.build_filename(Paths.ICON_PATH, "pdfpc.css");
+            var distCssPath = Path.build_filename(wrd, "pdfpc.css");
             var legacyUserCssPath = Path.build_filename(GLib.Environment.get_user_config_dir(), "pdfpc.css");
             var userCssPath = Path.build_filename(GLib.Environment.get_user_config_dir(), "pdfpc", "pdfpc.css");
 
@@ -135,8 +135,9 @@ namespace pdfpc {
                 } else if (GLib.FileUtils.test(distCssPath, (GLib.FileTest.IS_REGULAR))) {
                     globalProvider.load_from_path(distCssPath);
                 } else {
-                    GLib.printerr("No CSS file found\n");
-                    Process.exit(1);
+                    globalProvider.load_from_path("./pdfpc.css");
+                    GLib.printerr("No CSS file found :(\n");
+                    // Process.exit(1);
                 }
                 // load custom user css on top
                 if (GLib.FileUtils.test(userCssPath, (GLib.FileTest.IS_REGULAR))) {
@@ -250,6 +251,7 @@ namespace pdfpc {
                 Options.windowed = true;
             }
 
+            var wrd = GLib.Environment.get_current_dir();
             GLib.Environment.set_current_dir(GLib.Path.get_dirname(pdfFilename));
 
             var metadata = new Metadata.Pdf(GLib.Path.get_basename(pdfFilename));
@@ -259,7 +261,7 @@ namespace pdfpc {
             this.controller = new PresentationController( metadata, Options.black_on_end );
             this.cache_status = new CacheStatus();
 
-            set_styling();
+            set_styling(wrd);
 
             var screen = Gdk.Screen.get_default();
             if (!Options.windowed && !Options.single_screen && screen.get_n_monitors() > 1) {
